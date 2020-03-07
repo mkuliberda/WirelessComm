@@ -317,7 +317,7 @@ public:
 #endif
 	bool&	 						Config(const uint8_t & _payloadsize, const uint8_t & _channel, const NRF24L01_OutputPower_t & _outpwr, const NRF24L01_DataRate_t & _datarate);
 	bool 							SetRF(const NRF24L01_DataRate_t & _datarate, const NRF24L01_OutputPower_t & _outpwr);
-	uint8_t 						SetPayloadSize(const uint8_t & _payloadsize);
+	uint8_t 						GetPayloadSize(void);
 	bool 							SetChannel(const uint8_t & _channel);
 	void 							SetMyAddress(uint8_t *adr);
 	void							SetTxAddress(uint8_t *adr);

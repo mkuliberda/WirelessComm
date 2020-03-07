@@ -488,6 +488,10 @@ bool NRF24L01::SetRF(const NRF24L01_DataRate_t & _datarate, const NRF24L01_Outpu
 	return true;
 }
 
+uint8_t NRF24L01::GetPayloadSize(void){
+	return this->config_struct.PayloadSize;
+}
+
 uint8_t NRF24L01::ReadInterrupts(NRF24L01_IRQ_t* irq) {
 	irq->Status = this->GetStatus();
 	return irq->Status;

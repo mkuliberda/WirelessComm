@@ -36,7 +36,6 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 #include "main.h"
 
 #else
-#include "defines.h"
 #include "wiringPi.h"
 #include "wiringPiSPI.h"
 #endif

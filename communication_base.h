@@ -8,12 +8,10 @@
 #ifndef COMMUNICATION_BASE_H_
 #define COMMUNICATION_BASE_H_
 
-#include "defines.h"
-
 #ifndef RPI
 #include "stm32f3xx_hal.h"
 #else
-
+#include "../defines.h"
 #endif
 
 #define RPI_IRM 		0xAA

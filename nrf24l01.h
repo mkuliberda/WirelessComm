@@ -273,6 +273,7 @@ private:
 
 	bool							valid;
 	NRF24L01_s 						config_struct;
+	NRF24L01_IRQ_t 					irq_struct;
 #ifndef RPI
 	SPI_HandleTypeDef 				*pspi;
 	gpio_s							ce;
@@ -317,7 +318,7 @@ public:
 #endif
 	bool&	 						Config(const uint8_t & _payloadsize, const uint8_t & _channel, const NRF24L01_OutputPower_t & _outpwr, const NRF24L01_DataRate_t & _datarate);
 	bool 							SetRF(const NRF24L01_DataRate_t & _datarate, const NRF24L01_OutputPower_t & _outpwr);
-	uint8_t 						GetPayloadSize(void);
+	uint8_t& 						GetPayloadSize(void);
 	bool 							SetChannel(const uint8_t & _channel);
 	void 							SetMyAddress(uint8_t *adr);
 	void							SetTxAddress(uint8_t *adr);
@@ -330,8 +331,9 @@ public:
 	void 							PowerUpTx(void);
 	void 							PowerUpRx(void);
 	void 							PowerDown(void);
-	uint8_t 						ReadInterrupts(NRF24L01_IRQ_t* _irq);
+	uint8_t& 						ReadInterrupts(void);
 	void 							ClearInterrupts(void);
+	uint8_t							ReadRegisterTest(const uint8_t & _reg);
 
 
 };

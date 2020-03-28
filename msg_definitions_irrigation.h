@@ -5,29 +5,29 @@
 /**
  * @brief  Targets
  */
-typedef enum Target_t {
+typedef enum target_t {
 	Generic 	= 0x00,
 	Pump 		= 0x01,   
 	Tank 		= 0x02,     
 	Plant 		= 0x03,
-	PlantsGroup	= 0x04,
+	Sector		= 0x04,
 	Power		= 0x0D,
 	System		= 0x0E,
 	All			= 0xFF
-}Target_t;
+}target_t;
 
 /**
  * @brief  Directions
  */
-typedef enum _Direction_t {
+typedef enum _direction_t {
 	RPiToIRM 	= 0xAA,
 	IRMToRPi 	= 0xBB
-} Direction_t;
+} direction_t;
 
 /**
  * @brief  Commands, 0x1X - Pump, 0x2X - Tank, 0x3X - Plant, 0xDX - Power Supply, 0xEX - System 
  */
-typedef enum _Command_t {
+typedef enum _command_t {
 	None			= 0x00,
 	Start 			= 0x10,
 	Stop 			= 0x11,
@@ -47,4 +47,58 @@ typedef enum _Command_t {
 	SetStandby		= 0xFD,
 	GetState		= 0xFE,
 	GetStatus		= 0xFF
-} Command_t;
+} command_t;
+
+
+struct servicecode_s{
+	target_t reporter;
+	uint8_t id;
+	uint32_t code;
+};
+
+struct wframeRx_s {
+	direction_t start;
+	target_t target;
+	uint8_t target_id;
+	command_t cmd;
+	uint8_t subcmd1;
+	uint8_t subcmd2;
+	uint8_t subcmd3;
+	uint8_t subcmd4;
+	uint8_t free[23];
+	uint8_t crc8;
+};
+
+struct wframeTx_s {
+	direction_t start;
+	target_t sender;
+	uint8_t sender_id;
+	union val32_u val; 				//<<Make sure this is 32bit
+	char  desc[24];
+	uint8_t crc8;
+};
+
+struct extcmd_s{
+	target_t target;
+	uint8_t target_id;
+	command_t cmd;
+	uint8_t subcmd1;
+	uint8_t subcmd2;
+	uint8_t subcmd3;
+	uint8_t subcmd4;
+};
+
+union servicecode_u{
+	servicecode_s servicecode;
+	uint8_t buffer[6];
+};
+
+union txframe32byte_u{
+	uint8_t 	buffer[32];
+	wframeTx_s	values;
+};
+
+union rxframe32byte_u{
+	uint8_t 	buffer[32];
+	wframeRx_s 	values;
+};

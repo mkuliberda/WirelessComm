@@ -1,7 +1,19 @@
 /**
  * @brief  Project specific communication protocol defines and enums
  */
+#ifndef MSG_DEFINITIONS_IRRIGATION_H_
+#define MSG_DEFINITIONS_IRRIGATION_H_
 
+#ifndef RPI
+#include "stm32f3xx_hal.h"
+#else
+#include "../defines.h"
+#endif
+#include "communication_base.h"
+#include <algorithm>
+#include <array>
+
+#define RADIO1_PAYLOAD_SIZE 32
 /**
  * @brief  Targets
  */
@@ -56,20 +68,16 @@ struct servicecode_s{
 	uint32_t code;
 };
 
-struct wframeRx_s {
+struct wframeDl_s {
 	direction_t start;
 	target_t target;
 	uint8_t target_id;
 	command_t cmd;
-	uint8_t subcmd1;
-	uint8_t subcmd2;
-	uint8_t subcmd3;
-	uint8_t subcmd4;
-	uint8_t free[23];
+	uint8_t free[27];
 	uint8_t crc8;
 };
 
-struct wframeTx_s {
+struct wframeUl_s {
 	direction_t start;
 	target_t sender;
 	uint8_t sender_id;
@@ -78,7 +86,7 @@ struct wframeTx_s {
 	uint8_t crc8;
 };
 
-struct extcmd_s{
+struct cmd_s{
 	target_t target;
 	uint8_t target_id;
 	command_t cmd;
@@ -93,12 +101,61 @@ union servicecode_u{
 	uint8_t buffer[6];
 };
 
-union txframe32byte_u{
+union ulframe32byte_u{
 	uint8_t 	buffer[32];
-	wframeTx_s	values;
+	wframeUl_s	values;
 };
 
-union rxframe32byte_u{
+union dlframe32byte_u{
 	uint8_t 	buffer[32];
-	wframeRx_s 	values;
+	wframeDl_s 	values;
 };
+
+using namespace std;
+
+//class UplinkMessage{
+//
+//private:
+//
+//	uint8_t& calculateCRC();
+//
+//
+//public:
+//
+//	uint8_t 	buffer[32];
+//
+//	UplinkMessage(){};
+//
+//	UplinkMessage(){};
+//
+//	void encode(void);
+//
+//
+//
+//
+//};
+
+class DownlinkMessage{
+
+private:
+
+	array<uint8_t, RADIO1_PAYLOAD_SIZE> 	buffer;
+	dlframe32byte_u							downlinkframe;
+
+	uint8_t									calculateCRC8(uint8_t *data);
+
+public:
+
+	DownlinkMessage(){};
+
+	~DownlinkMessage(){};
+
+	bool 									validateCRC();
+	struct cmd_s 							decode();
+	array<uint8_t, RADIO1_PAYLOAD_SIZE>		encode(struct cmd_s _cmd);
+	bool									setBuffer(uint8_t* _frame);
+
+};
+
+#endif /* MSG_DEFINITIONS_IRRIGATION_H_ */
+

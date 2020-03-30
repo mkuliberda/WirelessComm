@@ -4,20 +4,24 @@
 #ifndef MSG_DEFINITIONS_IRRIGATION_H_
 #define MSG_DEFINITIONS_IRRIGATION_H_
 
-#ifndef RPI
-#include "stm32f3xx_hal.h"
-#else
-#include "../defines.h"
-#endif
+
 #include "communication_base.h"
 #include <algorithm>
 #include <array>
+#ifndef RPI
+#include "stm32f3xx_hal.h"
+#include "irrigation.h"
+#include "plants.h"
+#else
+#include "../defines.h"
+#endif
 
-#define RADIO1_PAYLOAD_SIZE 32
+
+#define PAYLOAD_SIZE 32
 /**
  * @brief  Targets
  */
-typedef enum target_t {
+typedef enum _target_t {
 	Generic 	= 0x00,
 	Pump 		= 0x01,   
 	Tank 		= 0x02,     
@@ -60,7 +64,6 @@ typedef enum _command_t {
 	GetState		= 0xFE,
 	GetStatus		= 0xFF
 } command_t;
-
 
 struct servicecode_s{
 	target_t reporter;
@@ -113,47 +116,39 @@ union dlframe32byte_u{
 
 using namespace std;
 
-//class UplinkMessage{
-//
-//private:
-//
-//	uint8_t& calculateCRC();
-//
-//
-//public:
-//
-//	uint8_t 	buffer[32];
-//
-//	UplinkMessage(){};
-//
-//	UplinkMessage(){};
-//
-//	void encode(void);
-//
-//
-//
-//
-//};
-
-class DownlinkMessage{
+class Message{
 
 private:
 
-	array<uint8_t, RADIO1_PAYLOAD_SIZE> 	buffer;
-	dlframe32byte_u							downlinkframe;
+	direction_t								commdirection;
+	array<uint8_t, PAYLOAD_SIZE> 			buffer;
 
 	uint8_t									calculateCRC8(uint8_t *data);
 
 public:
 
-	DownlinkMessage(){};
+	dlframe32byte_u							downlinkframe;
+	ulframe32byte_u							uplinkframe;
 
-	~DownlinkMessage(){};
+	Message(direction_t _commdirection):
+	commdirection(_commdirection)
+	{};
+
+	~Message(){};
 
 	bool 									validateCRC();
-	struct cmd_s 							decode();
-	array<uint8_t, RADIO1_PAYLOAD_SIZE>		encode(struct cmd_s _cmd);
 	bool									setBuffer(uint8_t* _frame);
+	struct cmd_s							decodeCommand();
+	struct tankstatus_s						decodeTank();
+	struct pumpstatus_s						decodePump();
+	struct plant_s							decodePlant();
+	struct sectorstatus_s					decodeSector();
+	array<uint8_t, PAYLOAD_SIZE>&			encode(struct cmd_s _cmd);
+	array<uint8_t, PAYLOAD_SIZE>&			encode(struct tankstatus_s _tank);
+	array<uint8_t, PAYLOAD_SIZE>&			encode(struct pumpstatus_s _pump);
+	array<uint8_t, PAYLOAD_SIZE>&			encode(struct plant_s _plant);
+	array<uint8_t, PAYLOAD_SIZE>&			encode(struct sectorstatus_s _sector);
+	array<uint8_t, PAYLOAD_SIZE>&			encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state);
 
 };
 

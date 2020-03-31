@@ -95,8 +95,15 @@ struct cmd_s{
 	command_t cmd;
 	uint8_t subcmd1;
 	uint8_t subcmd2;
-	uint8_t subcmd3;
-	uint8_t subcmd4;
+};
+
+struct confirmation_s{
+	target_t target;
+	uint8_t target_id;
+	command_t cmd;
+	uint8_t subcmd1;
+	uint8_t subcmd2;
+	bool consumed;
 };
 
 union servicecode_u{
@@ -116,34 +123,35 @@ union dlframe32byte_u{
 
 using namespace std;
 
-class Message{
+
+class IrrigationMessage32: Message{
 
 private:
 
 	direction_t								commdirection;
 	array<uint8_t, PAYLOAD_SIZE> 			buffer;
 
-	uint8_t									calculateCRC8(uint8_t *data);
-
 public:
 
 	dlframe32byte_u							downlinkframe;
 	ulframe32byte_u							uplinkframe;
 
-	Message(direction_t _commdirection):
+	IrrigationMessage32(const direction_t & _commdirection):
 	commdirection(_commdirection)
 	{};
 
-	~Message(){};
+	~IrrigationMessage32(){};
 
-	bool 									validateCRC();
-	bool									setBuffer(uint8_t* _frame);
+	bool 									validateCRC() override;
+	bool									setBuffer(uint8_t* _frame, const size_t & _buffer_size) override;
 	struct cmd_s							decodeCommand();
 	struct tankstatus_s						decodeTank();
 	struct pumpstatus_s						decodePump();
 	struct plant_s							decodePlant();
 	struct sectorstatus_s					decodeSector();
+	struct confirmation_s					decodeConfirmation();
 	array<uint8_t, PAYLOAD_SIZE>&			encode(struct cmd_s _cmd);
+	array<uint8_t, PAYLOAD_SIZE>&			encode(struct confirmation_s _confirmation);
 	array<uint8_t, PAYLOAD_SIZE>&			encode(struct tankstatus_s _tank);
 	array<uint8_t, PAYLOAD_SIZE>&			encode(struct pumpstatus_s _pump);
 	array<uint8_t, PAYLOAD_SIZE>&			encode(struct plant_s _plant);

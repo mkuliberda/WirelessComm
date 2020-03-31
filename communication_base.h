@@ -24,6 +24,7 @@ enum class communicationtype_t{
 union val32_u{
 	float float32;
 	uint32_t uint32;
+	uint8_t uint8[4];
 };
 
 union usartbuffer32_u{
@@ -47,6 +48,23 @@ public:
 
 	virtual ~Wireless(){};
 
+};
+
+
+class Message{
+
+protected:
+
+	uint8_t									calculateCRC8(uint8_t *data,const size_t & _payload_size);
+
+public:
+
+	Message(){};
+
+	virtual ~Message(){};
+
+	virtual bool 							validateCRC() = 0;
+	virtual bool							setBuffer(uint8_t* _frame, const size_t & _buffer_size) = 0;
 };
 
 

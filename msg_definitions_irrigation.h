@@ -76,7 +76,7 @@ struct wframeDl_s {
 	target_t target;
 	uint8_t target_id;
 	command_t cmd;
-	uint8_t free[27];
+	uint8_t free[PAYLOAD_SIZE-5];
 	uint8_t crc8;
 };
 
@@ -85,7 +85,7 @@ struct wframeUl_s {
 	target_t sender;
 	uint8_t sender_id;
 	union val32_u val; 				//<<Make sure this is 32bit
-	char  desc[24];
+	char  desc[PAYLOAD_SIZE-8];
 	uint8_t crc8;
 };
 
@@ -112,19 +112,19 @@ union servicecode_u{
 };
 
 union ulframe32byte_u{
-	uint8_t 	buffer[32];
+	uint8_t 	buffer[PAYLOAD_SIZE];
 	wframeUl_s	values;
 };
 
 union dlframe32byte_u{
-	uint8_t 	buffer[32];
+	uint8_t 	buffer[PAYLOAD_SIZE];
 	wframeDl_s 	values;
 };
 
 using namespace std;
 
 
-class IrrigationMessage32: Message{
+class IrrigationMessage: Message{
 
 private:
 
@@ -136,11 +136,11 @@ public:
 	dlframe32byte_u							downlinkframe;
 	ulframe32byte_u							uplinkframe;
 
-	IrrigationMessage32(const direction_t & _commdirection):
+	IrrigationMessage(const direction_t & _commdirection):
 	commdirection(_commdirection)
 	{};
 
-	~IrrigationMessage32(){};
+	~IrrigationMessage(){};
 
 	bool 									validateCRC() override;
 	bool									setBuffer(uint8_t* _frame, const size_t & _buffer_size) override;

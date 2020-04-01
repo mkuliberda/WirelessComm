@@ -8,10 +8,10 @@
 
 
 /*****************************************************************
- * IrrigationMessage32 class
+ * IrrigationMessage class
  *****************************************************************/
 
-bool IrrigationMessage32::validateCRC(){
+bool IrrigationMessage::validateCRC(){
 
 	bool passed = false;
 
@@ -35,7 +35,7 @@ bool IrrigationMessage32::validateCRC(){
 	return passed;
 }
 
-struct cmd_s IrrigationMessage32::decodeCommand(){
+struct cmd_s IrrigationMessage::decodeCommand(){
 
 	struct cmd_s cmd;
 
@@ -48,7 +48,7 @@ struct cmd_s IrrigationMessage32::decodeCommand(){
 	return cmd;
 }
 
-struct tankstatus_s IrrigationMessage32::decodeTank(){
+struct tankstatus_s IrrigationMessage::decodeTank(){
 
 	struct tankstatus_s tank;
 
@@ -58,7 +58,7 @@ struct tankstatus_s IrrigationMessage32::decodeTank(){
 	return tank;
 }
 
-struct pumpstatus_s IrrigationMessage32::decodePump(){
+struct pumpstatus_s IrrigationMessage::decodePump(){
 
 	struct pumpstatus_s pump;
 
@@ -68,7 +68,7 @@ struct pumpstatus_s IrrigationMessage32::decodePump(){
 	return pump;
 }
 
-struct plant_s IrrigationMessage32::decodePlant(){
+struct plant_s IrrigationMessage::decodePlant(){
 
 	struct plant_s plant;
 
@@ -79,7 +79,7 @@ struct plant_s IrrigationMessage32::decodePlant(){
 	return plant;
 }
 
-struct sectorstatus_s IrrigationMessage32::decodeSector(){
+struct sectorstatus_s IrrigationMessage::decodeSector(){
 
 	struct sectorstatus_s sector;
 
@@ -90,7 +90,7 @@ struct sectorstatus_s IrrigationMessage32::decodeSector(){
 	return sector;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct cmd_s _cmd){
+array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct cmd_s _cmd){
 
 	this->downlinkframe.values.start = this->commdirection;
 	this->downlinkframe.values.target = _cmd.target;
@@ -103,7 +103,7 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct cmd_s _cmd){
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct confirmation_s _confirmation){
+array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation_s _confirmation){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = _confirmation.target;
@@ -117,7 +117,7 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct confirmation_s 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct tankstatus_s _tank){
+array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct tankstatus_s _tank){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Tank;
@@ -130,7 +130,7 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct tankstatus_s _t
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct pumpstatus_s _pump){
+array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct pumpstatus_s _pump){
 
 	string description;
 	if(_pump.forced == true) description = "Forced operation";
@@ -140,7 +140,7 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct pumpstatus_s _p
 	this->uplinkframe.values.sender = target_t::Pump;
 	this->uplinkframe.values.sender_id = _pump.id;
 	this->uplinkframe.values.val.uint32 = _pump.state;
-	description.copy(this->uplinkframe.values.desc, 24);
+	description.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
@@ -148,13 +148,13 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct pumpstatus_s _p
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct plant_s _plant){
+array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plant_s _plant){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Plant;
 	this->uplinkframe.values.sender_id = _plant.id;
 	this->uplinkframe.values.val.float32 = _plant.health;
-	_plant.name.copy(this->uplinkframe.values.desc, 24);
+	_plant.name.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
@@ -162,13 +162,13 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct plant_s _plant)
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct sectorstatus_s _sector){
+array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus_s _sector){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Sector;
 	this->uplinkframe.values.sender_id = _sector.id;
 	this->uplinkframe.values.val.uint32 = _sector.state;
-	_sector.plants.copy(this->uplinkframe.values.desc, 24);
+	_sector.plants.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
@@ -176,7 +176,7 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encode(struct sectorstatus_s 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state){
+array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = _target;
@@ -190,11 +190,11 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage32::encodeGeneric(const target_t 
 }
 
 
-bool IrrigationMessage32::setBuffer(uint8_t* _frame, const size_t & _buffer_size){
+bool IrrigationMessage::setBuffer(uint8_t* _frame, const size_t & _buffer_size){
 
 	bool success = true;
 
-	if (_buffer_size == 32){
+	if (_buffer_size > 0){
 
 		switch(this->commdirection){
 		case direction_t::RPiToIRM:

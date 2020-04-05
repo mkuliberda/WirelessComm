@@ -110,6 +110,8 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation_s _c
 	this->uplinkframe.values.sender_id = _confirmation.target_id;
 	this->uplinkframe.values.val.uint8[0] = _confirmation.cmd;
 	this->uplinkframe.values.val.uint8[1] = _confirmation.consumed ? 1 : 0;
+	this->uplinkframe.values.val.uint8[2] = 0;
+	this->uplinkframe.values.val.uint8[3] = 0;
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));

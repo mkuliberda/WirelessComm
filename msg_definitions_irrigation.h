@@ -106,6 +106,12 @@ struct confirmation_s{
 	bool consumed;
 };
 
+struct singlevalue_s{
+	target_t target;
+	uint8_t target_id;
+	float value;
+};
+
 union servicecode_u{
 	servicecode_s servicecode;
 	uint8_t buffer[6];

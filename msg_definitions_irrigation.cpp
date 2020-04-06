@@ -48,6 +48,20 @@ struct cmd_s IrrigationMessage::decodeCommand(){
 	return cmd;
 }
 
+struct confirmation_s IrrigationMessage::decodeConfirmation(){
+
+	struct confirmation_s confirmation;
+
+	confirmation.target = this->uplinkframe.values.sender;
+	confirmation.target_id = this->uplinkframe.values.sender_id;
+	confirmation.cmd = static_cast<command_t>(this->uplinkframe.values.val.uint8[0]);
+	confirmation.consumed = this->uplinkframe.values.val.uint8[1] == 1 ? true : false;
+	confirmation.subcmd1 = this->uplinkframe.values.val.uint8[2];
+	confirmation.subcmd2 = this->uplinkframe.values.val.uint8[3];
+
+	return confirmation;
+}
+
 struct tankstatus_s IrrigationMessage::decodeTank(){
 
 	struct tankstatus_s tank;
@@ -110,8 +124,8 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation_s _c
 	this->uplinkframe.values.sender_id = _confirmation.target_id;
 	this->uplinkframe.values.val.uint8[0] = _confirmation.cmd;
 	this->uplinkframe.values.val.uint8[1] = _confirmation.consumed ? 1 : 0;
-	this->uplinkframe.values.val.uint8[2] = 0;
-	this->uplinkframe.values.val.uint8[3] = 0;
+	this->uplinkframe.values.val.uint8[2] = _confirmation.subcmd1;
+	this->uplinkframe.values.val.uint8[3] = _confirmation.subcmd2;
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));

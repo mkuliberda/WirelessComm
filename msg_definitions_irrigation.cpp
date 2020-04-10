@@ -19,12 +19,12 @@ bool IrrigationMessage::validateCRC(){
 
 	case direction_t::RPiToIRM:
 		if (this->calculateCRC8(this->downlinkframe.buffer, PAYLOAD_SIZE) == this->downlinkframe.values.crc8) passed = true;
-		else passed = true;	//TODO: change to false, when ready on RPi side;
+		else passed = false;	//TODO: change to false, when ready on RPi side;
 		break;
 
 	case direction_t::IRMToRPi:
 		if (this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE) == this->uplinkframe.values.crc8) passed = true;
-		else passed = true;	//TODO: change to false, when ready on RPi side;
+		else passed = false;
 		break;
 
 	default:

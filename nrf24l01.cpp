@@ -224,7 +224,7 @@ void NRF24L01::TransmitPayload(uint8_t *data) {
 	wiringPiSPIDataRW(this->rpi_spichan, buffer, this->config_struct.PayloadSize + 1);
 #endif
 	/* Disable SPI */
-	this->CSN_LOW();
+	this->CSN_HIGH();
 	/* Send data! */
 	this->CE_HIGH();
 }

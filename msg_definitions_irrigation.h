@@ -92,6 +92,7 @@ typedef enum _command_t : uint8_t{
 	GetStatus		= 0xFF
 } command_t;
 
+#pragma pack(push,1)
 struct servicecode_s{
 	target_t reporter;
 	uint8_t id;
@@ -153,6 +154,7 @@ union dlframe32byte_u{
 	uint8_t 	buffer[PAYLOAD_SIZE];
 	wframeDl_s 	values;
 };
+#pragma pack(pop)
 
 //using namespace std;
 

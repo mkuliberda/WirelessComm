@@ -14,6 +14,33 @@
 #include "plants.h"
 #else
 #include "../defines.h"
+#include <string>  //TODO: resolve linkage errors later
+
+#pragma pack(push, 1)
+struct pumpstatus_s {
+	uint8_t id = 0;
+	uint32_t state = 0;
+	bool forced = false;
+	bool cmd_consumed = false;
+};
+
+struct tankstatus_s {
+	uint8_t id;
+	uint32_t state;
+};
+
+struct plant_s{
+	std::string name;
+	uint32_t id;
+	float health;
+};
+
+struct sectorstatus_s {
+	uint8_t id;
+	uint32_t state;
+	std::string plants;
+};
+#pragma pack(pop)
 #endif
 
 
@@ -21,7 +48,7 @@
 /**
  * @brief  Targets
  */
-typedef enum _target_t {
+typedef enum _target_t : uint8_t{
 	Generic 	= 0x00,
 	Pump 		= 0x01,   
 	Tank 		= 0x02,     
@@ -35,7 +62,7 @@ typedef enum _target_t {
 /**
  * @brief  Directions
  */
-typedef enum _direction_t {
+typedef enum _direction_t : uint8_t{
 	RPiToIRM 	= 0xAA,
 	IRMToRPi 	= 0xBB
 } direction_t;
@@ -43,7 +70,7 @@ typedef enum _direction_t {
 /**
  * @brief  Commands, 0x1X - Pump, 0x2X - Tank, 0x3X - Plant, 0xDX - Power Supply, 0xEX - System 
  */
-typedef enum _command_t {
+typedef enum _command_t : uint8_t{
 	None			= 0x00,
 	Start 			= 0x10,
 	Stop 			= 0x11,
@@ -127,7 +154,7 @@ union dlframe32byte_u{
 	wframeDl_s 	values;
 };
 
-using namespace std;
+//using namespace std;
 
 
 class IrrigationMessage: Message{
@@ -135,7 +162,7 @@ class IrrigationMessage: Message{
 private:
 
 	direction_t								commdirection;
-	array<uint8_t, PAYLOAD_SIZE> 			buffer;
+	std::array<uint8_t, PAYLOAD_SIZE> 		buffer;
 
 public:
 
@@ -156,13 +183,13 @@ public:
 	struct plant_s							decodePlant();
 	struct sectorstatus_s					decodeSector();
 	struct confirmation_s					decodeConfirmation();
-	array<uint8_t, PAYLOAD_SIZE>&			encode(struct cmd_s _cmd);
-	array<uint8_t, PAYLOAD_SIZE>&			encode(struct confirmation_s _confirmation);
-	array<uint8_t, PAYLOAD_SIZE>&			encode(struct tankstatus_s _tank);
-	array<uint8_t, PAYLOAD_SIZE>&			encode(struct pumpstatus_s _pump);
-	array<uint8_t, PAYLOAD_SIZE>&			encode(struct plant_s _plant);
-	array<uint8_t, PAYLOAD_SIZE>&			encode(struct sectorstatus_s _sector);
-	array<uint8_t, PAYLOAD_SIZE>&			encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct cmd_s _cmd);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct confirmation_s _confirmation);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct tankstatus_s _tank);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct pumpstatus_s _pump);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct plant_s _plant);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct sectorstatus_s _sector);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state);
 
 };
 

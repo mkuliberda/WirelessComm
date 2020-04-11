@@ -104,7 +104,7 @@ struct sectorstatus_s IrrigationMessage::decodeSector(){
 	return sector;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct cmd_s _cmd){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct cmd_s _cmd){
 
 	this->downlinkframe.values.start = this->commdirection;
 	this->downlinkframe.values.target = _cmd.target;
@@ -112,12 +112,12 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct cmd_s _cmd){
 	this->downlinkframe.values.cmd = _cmd.cmd;
 	this->downlinkframe.values.crc8 = this->calculateCRC8(this->downlinkframe.buffer, PAYLOAD_SIZE);
 
-	copy(begin(this->downlinkframe.buffer), end(this->downlinkframe.buffer), begin(this->buffer));
+	std::copy(std::begin(this->downlinkframe.buffer), std::end(this->downlinkframe.buffer), std::begin(this->buffer));
 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation_s _confirmation){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation_s _confirmation){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = _confirmation.target;
@@ -128,12 +128,12 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation_s _c
 	this->uplinkframe.values.val.uint8[3] = _confirmation.subcmd2;
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
-	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
+	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct tankstatus_s _tank){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct tankstatus_s _tank){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Tank;
@@ -141,14 +141,14 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct tankstatus_s _tan
 	this->uplinkframe.values.val.uint32 = _tank.state;
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
-	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
+	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct pumpstatus_s _pump){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct pumpstatus_s _pump){
 
-	string description;
+	std::string description;
 	if(_pump.forced == true) description = "Forced operation";
 	else description = "Normal operation";
 
@@ -159,12 +159,12 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct pumpstatus_s _pum
 	description.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
-	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
+	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plant_s _plant){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plant_s _plant){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Plant;
@@ -173,12 +173,12 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plant_s _plant){
 	_plant.name.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
-	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
+	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus_s _sector){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus_s _sector){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Sector;
@@ -187,12 +187,12 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus_s _s
 	_sector.plants.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
-	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
+	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
 
 	return this->buffer;
 }
 
-array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = _target;
@@ -200,7 +200,7 @@ array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encodeGeneric(const target_t & 
 	this->uplinkframe.values.val.uint32 = _state;
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
-	copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
+	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
 
 	return this->buffer;
 }
@@ -217,14 +217,14 @@ bool IrrigationMessage::setBuffer(uint8_t* _frame, const size_t & _buffer_size){
 			for (size_t i = 0; i < _buffer_size; ++i){
 				this->downlinkframe.buffer[i] = _frame[i];
 			}
-			copy(begin(this->downlinkframe.buffer), end(this->downlinkframe.buffer), begin(this->buffer));
+			std::copy(std::begin(this->downlinkframe.buffer), std::end(this->downlinkframe.buffer), std::begin(this->buffer));
 			break;
 
 		case direction_t::IRMToRPi:
 			for (size_t i = 0; i < _buffer_size; ++i){
 				this->uplinkframe.buffer[i] = _frame[i];
 			}
-			copy(begin(this->uplinkframe.buffer), end(this->uplinkframe.buffer), begin(this->buffer));
+			std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
 			break;
 
 		default:

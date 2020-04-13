@@ -19,7 +19,7 @@ bool IrrigationMessage::validateCRC(){
 
 	case direction_t::RPiToIRM:
 		if (this->calculateCRC8(this->downlinkframe.buffer, PAYLOAD_SIZE) == this->downlinkframe.values.crc8) passed = true;
-		else passed = false;	//TODO: change to false, when ready on RPi side;
+		else passed = false;
 		break;
 
 	case direction_t::IRMToRPi:
@@ -88,7 +88,8 @@ struct plant_s IrrigationMessage::decodePlant(){
 
 	plant.id = this->uplinkframe.values.sender_id;
 	plant.health = this->uplinkframe.values.val.float32;
-	plant.name = this->uplinkframe.values.desc;
+	for (uint8_t i = 0; i < NAME_LENGTH; ++i) plant.name[i] = '\0';
+	for (uint8_t i = 0; i < min(NAME_LENGTH, PAYLOAD_SIZE-8); ++i) plant.name[i] = this->uplinkframe.values.desc[i];
 
 	return plant;
 }
@@ -170,7 +171,8 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plant_s _pla
 	this->uplinkframe.values.sender = target_t::Plant;
 	this->uplinkframe.values.sender_id = _plant.id;
 	this->uplinkframe.values.val.float32 = _plant.health;
-	_plant.name.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
+	for (uint8_t i = 0; i < PAYLOAD_SIZE-8; ++i) this->uplinkframe.values.desc[i] = '\0'; //clean description from junk
+	for (uint8_t i = 0; i < min(NAME_LENGTH, PAYLOAD_SIZE-8); ++i) this->uplinkframe.values.desc[i] = _plant.name[i];
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));

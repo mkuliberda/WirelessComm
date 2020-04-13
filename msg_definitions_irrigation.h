@@ -16,6 +16,8 @@
 #include "../defines.h"
 #include <string>  //TODO: resolve linkage errors later
 
+#define NAME_LENGTH 20
+
 #pragma pack(push, 1)
 struct pumpstatus_s {
 	uint8_t id = 0;
@@ -30,7 +32,7 @@ struct tankstatus_s {
 };
 
 struct plant_s{
-	std::string name;
+	char name[NAME_LENGTH];
 	uint32_t id;
 	float health;
 };

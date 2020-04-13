@@ -240,6 +240,10 @@ bool IrrigationMessage::setBuffer(uint8_t* _frame, const size_t & _buffer_size){
 
 }
 
+std::array<uint8_t, PAYLOAD_SIZE>& IrrigationMessage::getBuffer(void){
+	return this->buffer;
+}
+
 
 
 

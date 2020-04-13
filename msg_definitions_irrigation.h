@@ -179,6 +179,7 @@ public:
 
 	bool 									validateCRC() override;
 	bool									setBuffer(uint8_t* _frame, const size_t & _buffer_size) override;
+	std::array<uint8_t, PAYLOAD_SIZE>&		getBuffer();
 	struct cmd_s							decodeCommand();
 	struct tankstatus_s						decodeTank();
 	struct pumpstatus_s						decodePump();

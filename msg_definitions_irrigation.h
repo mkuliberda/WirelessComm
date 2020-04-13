@@ -158,7 +158,6 @@ union dlframe32byte_u{
 };
 #pragma pack(pop)
 
-//using namespace std;
 
 
 class IrrigationMessage: Message{

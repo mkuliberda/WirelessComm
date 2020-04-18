@@ -33,7 +33,7 @@ struct tankstatus_s {
 
 struct plant_s{
 	char name[NAME_LENGTH];
-	uint32_t id;
+	uint8_t id;
 	float health;
 };
 

@@ -20,26 +20,26 @@
 
 #pragma pack(push, 1)
 struct pumpstatus_s {
-	uint8_t id = 0;
 	uint32_t state = 0;
+	uint8_t id = 0;
 	bool forced = false;
 	bool cmd_consumed = false;
 };
 
 struct tankstatus_s {
-	uint8_t id;
 	uint32_t state;
+	uint8_t id;
 };
 
 struct plant_s{
-	char name[NAME_LENGTH];
-	uint8_t id;
 	float health;
+	uint8_t id;
+	char name[NAME_LENGTH];
 };
 
 struct sectorstatus_s {
-	uint8_t id;
 	uint32_t state;
+	uint8_t id;
 	std::string plants;
 };
 #pragma pack(pop)

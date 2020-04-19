@@ -25,13 +25,24 @@ enum class batterystate_t: uint8_t{
 	discharging
 };
 
-enum batteryerror_t: uint8_t{
+struct batteryerror_t{
+	uint8_t overvoltage 	: 1;
+	uint8_t overdischarge 	: 1;
+	uint8_t overheated 		: 1;
+	uint8_t overloaded 		: 1;
+	uint8_t free1 			: 1;
+	uint8_t free2 			: 1;
+	uint8_t free3 			: 1;
+	uint8_t free4 			: 1;
+};
+
+/*enum batteryerror_t: uint8_t{
 	battery_ok 		= 0,
 	overvoltage 	= 2,
 	overtemperature = 4,
 	overloaded 		= 8,
 	flat			= 16
-};
+};*/
 
 #pragma pack(push, 1)
 struct pumpstatus_s {
@@ -62,8 +73,7 @@ struct battery_s{
 	uint16_t remaining_time_min;
 	uint8_t id;
 	uint8_t percentage;
-	batterystate_t state;
-	batteryerror_t error;
+	uint8_t status;
 };
 #pragma pack(pop)
 #endif

@@ -111,8 +111,8 @@ struct battery_s IrrigationMessage::decodeBattery(){
 
 	battery.id = this->uplinkframe.values.sender_id;
 	battery.percentage = this->uplinkframe.values.val.uint8[0];
-	battery.state = static_cast<batterystate_t>(this->uplinkframe.values.val.uint8[1]);
-	battery.error = static_cast<batteryerror_t>(this->uplinkframe.values.val.uint8[2]);
+	battery.status = this->uplinkframe.values.val.uint8[1];
+	battery.remaining_time_min = static_cast<uint16_t>(this->uplinkframe.values.val.uint8[2] << 8 | this->uplinkframe.values.val.uint8[3]);
 
 	return battery;
 }
@@ -212,8 +212,9 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct battery_s _b
 	this->uplinkframe.values.sender = target_t::Power;
 	this->uplinkframe.values.sender_id = _battery.id;
 	this->uplinkframe.values.val.uint8[0] = _battery.percentage;
-	this->uplinkframe.values.val.uint8[1] = static_cast<uint8_t>(_battery.state);
-	this->uplinkframe.values.val.uint8[2] = static_cast<uint8_t>(_battery.error);
+	this->uplinkframe.values.val.uint8[1] = _battery.status;
+	this->uplinkframe.values.val.uint8[2] = static_cast<uint8_t>(_battery.remaining_time_min >> 8);
+	this->uplinkframe.values.val.uint8[3] = static_cast<uint8_t>(_battery.remaining_time_min);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));

@@ -105,6 +105,18 @@ struct sectorstatus_s IrrigationMessage::decodeSector(){
 	return sector;
 }
 
+struct battery_s IrrigationMessage::decodeBattery(){
+
+	struct battery_s battery;
+
+	battery.id = this->uplinkframe.values.sender_id;
+	battery.percentage = this->uplinkframe.values.val.uint8[0];
+	battery.state = static_cast<batterystate_t>(this->uplinkframe.values.val.uint8[1]);
+	battery.error = static_cast<batteryerror_t>(this->uplinkframe.values.val.uint8[2]);
+
+	return battery;
+}
+
 std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct cmd_s _cmd){
 
 	this->downlinkframe.values.start = this->commdirection;
@@ -187,6 +199,21 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus
 	this->uplinkframe.values.sender_id = _sector.id;
 	this->uplinkframe.values.val.uint32 = _sector.state;
 	_sector.plants.copy(this->uplinkframe.values.desc, PAYLOAD_SIZE-8);
+	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
+
+	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));
+
+	return this->buffer;
+}
+
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct battery_s _battery){
+
+	this->uplinkframe.values.start = this->commdirection;
+	this->uplinkframe.values.sender = target_t::Power;
+	this->uplinkframe.values.sender_id = _battery.id;
+	this->uplinkframe.values.val.uint8[0] = _battery.percentage;
+	this->uplinkframe.values.val.uint8[1] = static_cast<uint8_t>(_battery.state);
+	this->uplinkframe.values.val.uint8[2] = static_cast<uint8_t>(_battery.error);
 	this->uplinkframe.values.crc8 = this->calculateCRC8(this->uplinkframe.buffer, PAYLOAD_SIZE);
 
 	std::copy(std::begin(this->uplinkframe.buffer), std::end(this->uplinkframe.buffer), std::begin(this->buffer));

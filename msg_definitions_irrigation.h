@@ -57,7 +57,7 @@ struct tankstatus_s {
 	uint8_t id;
 };
 
-struct plant_s{
+struct plantstatus_s{
 	float health;
 	uint8_t id;
 	char name[NAME_LENGTH];
@@ -69,7 +69,7 @@ struct sectorstatus_s {
 	std::string plants;
 };
 
-struct battery_s{
+struct batterystatus_s{
 	uint16_t remaining_time_min;
 	uint8_t id;
 	uint8_t percentage;
@@ -217,17 +217,17 @@ public:
 	struct cmd_s							decodeCommand();
 	struct tankstatus_s						decodeTank();
 	struct pumpstatus_s						decodePump();
-	struct plant_s							decodePlant();
+	struct plantstatus_s					decodePlant();
 	struct sectorstatus_s					decodeSector();
-	struct battery_s						decodeBattery();
+	struct batterystatus_s					decodeBattery();
 	struct confirmation_s					decodeConfirmation();
 	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct cmd_s _cmd);
 	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct confirmation_s _confirmation);
 	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct tankstatus_s _tank);
 	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct pumpstatus_s _pump);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct plant_s _plant);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct plantstatus_s _plant);
 	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct sectorstatus_s _sector);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct battery_s _battery);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct batterystatus_s _battery);
 	std::array<uint8_t, PAYLOAD_SIZE>&			encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state);
 
 };

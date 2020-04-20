@@ -82,9 +82,9 @@ struct pumpstatus_s IrrigationMessage::decodePump(){
 	return pump;
 }
 
-struct plant_s IrrigationMessage::decodePlant(){
+struct plantstatus_s IrrigationMessage::decodePlant(){
 
-	struct plant_s plant;
+	struct plantstatus_s plant;
 
 	plant.id = this->uplinkframe.values.sender_id;
 	plant.health = this->uplinkframe.values.val.float32;
@@ -105,9 +105,9 @@ struct sectorstatus_s IrrigationMessage::decodeSector(){
 	return sector;
 }
 
-struct battery_s IrrigationMessage::decodeBattery(){
+struct batterystatus_s IrrigationMessage::decodeBattery(){
 
-	struct battery_s battery;
+	struct batterystatus_s battery;
 
 	battery.id = this->uplinkframe.values.sender_id;
 	battery.percentage = this->uplinkframe.values.val.uint8[0];
@@ -177,7 +177,7 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct pumpstatus_s
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plant_s _plant){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plantstatus_s _plant){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Plant;
@@ -206,7 +206,7 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct battery_s _battery){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct batterystatus_s _battery){
 
 	this->uplinkframe.values.start = this->commdirection;
 	this->uplinkframe.values.sender = target_t::Power;

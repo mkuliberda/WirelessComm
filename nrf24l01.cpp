@@ -541,3 +541,11 @@ uint8_t NRF24L01::ReadRegisterTest(const uint8_t & _reg) {
 	return value;
 }
 
+bool NRF24L01::isReceiver(void){
+	return this->ReadBit(NRF24L01_REG_CONFIG, NRF24L01_PRIM_RX) ? true : false;
+}
+
+bool NRF24L01::isTransmitter(void){
+	return this->ReadBit(NRF24L01_REG_CONFIG, NRF24L01_PRIM_RX) ? false : true;
+}
+

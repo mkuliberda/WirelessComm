@@ -334,7 +334,8 @@ public:
 	uint8_t& 						ReadInterrupts(void);
 	void 							ClearInterrupts(void);
 	uint8_t							ReadRegisterTest(const uint8_t & _reg);
-
+	bool							isReceiver(void);
+	bool							isTransmitter(void);
 
 };
 

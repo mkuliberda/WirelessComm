@@ -202,14 +202,27 @@ private:
 
 public:
 
-	dlframe32byte_u							downlinkframe;
-	ulframe32byte_u							uplinkframe;
+	dlframe32byte_u							*downlinkframe = nullptr;
+	ulframe32byte_u							*uplinkframe = nullptr;
 
 	IrrigationMessage(const direction_t & _commdirection):
 	commdirection(_commdirection)
-	{};
+	{
+		switch(this->commdirection){
+		case direction_t::RPiToIRM:
+			this->downlinkframe = new dlframe32byte_u;
+			break;
+		case direction_t::IRMToRPi:
+			this->uplinkframe = new ulframe32byte_u;
+			break;
+		}
+	};
 
-	~IrrigationMessage(){};
+	~IrrigationMessage()
+	{
+		if (this->downlinkframe != nullptr) delete this->downlinkframe;
+		if (this->uplinkframe != nullptr) delete this->uplinkframe;
+	};
 
 	bool 									validateCRC() override;
 	bool									setBuffer(uint8_t* _frame, const size_t & _buffer_size) override;

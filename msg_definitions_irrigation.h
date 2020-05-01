@@ -15,9 +15,10 @@
 #include "power.h"
 #else
 #include "../defines.h"
-#include <string>  //TODO: resolve linkage errors later
+#include <cstring>
 
 #define NAME_LENGTH 20
+#define PLANTS_LENGTH 20
 
 enum class batterystate_t: uint8_t{
 	undetermined,
@@ -35,14 +36,6 @@ struct batteryerror_t{
 	uint8_t free3 			: 1;
 	uint8_t free4 			: 1;
 };
-
-/*enum batteryerror_t: uint8_t{
-	battery_ok 		= 0,
-	overvoltage 	= 2,
-	overtemperature = 4,
-	overloaded 		= 8,
-	flat			= 16
-};*/
 
 #pragma pack(push, 1)
 struct pumpstatus_s {
@@ -66,7 +59,7 @@ struct plantstatus_s{
 struct sectorstatus_s {
 	uint32_t state;
 	uint8_t id;
-	std::string plants;
+	char plants[PLANTS_LENGTH];
 };
 
 struct batterystatus_s{
@@ -234,13 +227,13 @@ public:
 	struct sectorstatus_s					decodeSector();
 	struct batterystatus_s					decodeBattery();
 	struct confirmation_s					decodeConfirmation();
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct cmd_s _cmd);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct confirmation_s _confirmation);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct tankstatus_s _tank);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct pumpstatus_s _pump);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct plantstatus_s _plant);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct sectorstatus_s _sector);
-	std::array<uint8_t, PAYLOAD_SIZE>&			encode(struct batterystatus_s _battery);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(const struct cmd_s &_cmd);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(const struct confirmation_s &_confirmation);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(const struct tankstatus_s &_tank);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(const struct pumpstatus_s &_pump);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(const struct plantstatus_s &_plant);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(const struct sectorstatus_s &_sector);
+	std::array<uint8_t, PAYLOAD_SIZE>&			encode(const struct batterystatus_s &_battery);
 	std::array<uint8_t, PAYLOAD_SIZE>&			encodeGeneric(const target_t & _target, const uint8_t & _id, const uint32_t & _state);
 
 };

@@ -99,7 +99,8 @@ struct sectorstatus_s IrrigationMessage::decodeSector(){
 	struct sectorstatus_s sector;
 
 	sector.id = this->uplinkframe->values.sender_id;
-	sector.plants = this->uplinkframe->values.desc;
+	for (uint8_t i = 0; i < std::min(PLANTS_LENGTH, PAYLOAD_SIZE-8); ++i) sector.plants[i] = this->uplinkframe->values.desc[i];
+	//sector.plants = this->uplinkframe->values.desc;
 	sector.state = this->uplinkframe->values.val.uint32;
 
 	return sector;
@@ -117,7 +118,7 @@ struct batterystatus_s IrrigationMessage::decodeBattery(){
 	return battery;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct cmd_s _cmd){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(const struct cmd_s &_cmd){
 
 	this->downlinkframe->values.start = this->commdirection;
 	this->downlinkframe->values.target = _cmd.target;
@@ -130,9 +131,9 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct cmd_s _cmd){
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation_s _confirmation){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(const struct confirmation_s &_confirmation){
 
-	this->uplinkframe->values.start = this->commdirection;
+	this->uplinkframe->values.start = direction_t::RPiToIRM;
 	this->uplinkframe->values.sender = _confirmation.target;
 	this->uplinkframe->values.sender_id = _confirmation.target_id;
 	this->uplinkframe->values.val.uint8[0] = _confirmation.cmd;
@@ -147,7 +148,7 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct confirmation
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct tankstatus_s _tank){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(const struct tankstatus_s &_tank){
 
 	this->uplinkframe->values.start = this->commdirection;
 	this->uplinkframe->values.sender = target_t::Tank;
@@ -160,7 +161,7 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct tankstatus_s
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct pumpstatus_s _pump){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(const struct pumpstatus_s &_pump){
 
 	std::string description;
 	if(_pump.forced == true) description = "Forced operation";
@@ -178,7 +179,7 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct pumpstatus_s
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plantstatus_s _plant){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(const struct plantstatus_s &_plant){
 
 	this->uplinkframe->values.start = this->commdirection;
 	this->uplinkframe->values.sender = target_t::Plant;
@@ -193,13 +194,14 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct plantstatus_
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus_s _sector){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(const struct sectorstatus_s &_sector){
 
 	this->uplinkframe->values.start = this->commdirection;
 	this->uplinkframe->values.sender = target_t::Sector;
 	this->uplinkframe->values.sender_id = _sector.id;
 	this->uplinkframe->values.val.uint32 = _sector.state;
-	_sector.plants.copy(this->uplinkframe->values.desc, PAYLOAD_SIZE-8);
+	for (uint8_t i = 0; i < PAYLOAD_SIZE-8; ++i) this->uplinkframe->values.desc[i] = '\0'; //clean description from junk
+	for (uint8_t i = 0; i < std::min(PLANTS_LENGTH, PAYLOAD_SIZE-8); ++i) this->uplinkframe->values.desc[i] = _sector.plants[i]; //copy plants to buffer
 	this->uplinkframe->values.crc8 = this->calculateCRC8(this->uplinkframe->buffer, PAYLOAD_SIZE);
 
 	std::copy(std::begin(this->uplinkframe->buffer), std::end(this->uplinkframe->buffer), std::begin(this->buffer));
@@ -207,7 +209,7 @@ std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct sectorstatus
 	return this->buffer;
 }
 
-std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(struct batterystatus_s _battery){
+std::array<uint8_t, PAYLOAD_SIZE>&	IrrigationMessage::encode(const struct batterystatus_s &_battery){
 
 	this->uplinkframe->values.start = this->commdirection;
 	this->uplinkframe->values.sender = target_t::Power;

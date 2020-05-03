@@ -127,7 +127,7 @@ void NRF24L01::FlushTX(void){
 	uint8_t tx = NRF24L01_FLUSH_TX_MASK;
 	this->CSN_LOW();
 #ifndef RPI
-	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &tx, 1, SPI_TFER_TIMEOUT);
 #else
 	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
 #endif
@@ -137,7 +137,7 @@ void NRF24L01::FlushRX(void){
 	uint8_t tx = NRF24L01_FLUSH_RX_MASK;
 	this->CSN_LOW();
 #ifndef RPI
-	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &tx, 1, SPI_TFER_TIMEOUT);
 #else
 	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
 #endif
@@ -213,9 +213,9 @@ void NRF24L01::TransmitPayload(uint8_t *data) {
 	this->CSN_LOW();
 #ifndef RPI
 	/* Send write payload command */
-	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &tx, 1, SPI_TFER_TIMEOUT);
 	/* Fill payload with data*/
-	HAL_SPI_Transmit(this->pspi, data, this->config_struct.PayloadSize, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, data, this->config_struct.PayloadSize, SPI_TFER_TIMEOUT);
 #else
 	uint8_t buffer[33];
 	buffer[0] = tx;
@@ -237,9 +237,9 @@ void NRF24L01::GetPayload(uint8_t* data) {
 	this->CSN_LOW();
 #ifndef RPI
 	/* Send read payload command*/
-	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &tx, 1, SPI_TFER_TIMEOUT);
 	/* Read payload */
-	HAL_SPI_Receive(this->pspi, data, this->config_struct.PayloadSize, HAL_MAX_DELAY);
+	HAL_SPI_Receive(this->pspi, data, this->config_struct.PayloadSize, SPI_TFER_TIMEOUT);
 #else
 	uint8_t buffer[33];
 	buffer[0] = tx;
@@ -283,7 +283,7 @@ uint8_t NRF24L01::GetStatus(void) {
 	this->CSN_LOW();
 #ifndef RPI
 	/* First received byte is always status register */
-	HAL_SPI_TransmitReceive(this->pspi, &tx, &status, 1, HAL_MAX_DELAY);
+	HAL_SPI_TransmitReceive(this->pspi, &tx, &status, 1, SPI_TFER_TIMEOUT);
 #else
 	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
 	status = tx;
@@ -459,8 +459,8 @@ uint8_t NRF24L01::ReadRegister(const uint8_t & _reg) {
 
 	this->CSN_LOW();
 #ifndef RPI
-	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
-	HAL_SPI_TransmitReceive(this->pspi, &tx, &value, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &mask, 1, SPI_TFER_TIMEOUT);
+	HAL_SPI_TransmitReceive(this->pspi, &tx, &value, 1, SPI_TFER_TIMEOUT);
 #else
 	uint8_t buffer[2] = {mask, tx};
 	wiringPiSPIDataRW(this->rpi_spichan, buffer, 2);
@@ -477,8 +477,8 @@ void NRF24L01::ReadRegisterMulti(const uint8_t & _reg, uint8_t* data, const uint
 
 	this->CSN_LOW();
 #ifndef RPI
-	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
-	HAL_SPI_Receive(this->pspi, data, _count, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &mask, 1, SPI_TFER_TIMEOUT);
+	HAL_SPI_Receive(this->pspi, data, _count, SPI_TFER_TIMEOUT);
 #else
 	uint8_t buffer[_count + 1];
 	buffer[0] = mask;
@@ -495,8 +495,8 @@ void NRF24L01::WriteRegister(const uint8_t & _reg, const uint8_t & _value) {
 
 	this->CSN_LOW();
 #ifndef RPI
-	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
-	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &mask, 1, SPI_TFER_TIMEOUT);
+	HAL_SPI_Transmit(this->pspi, &tx, 1, SPI_TFER_TIMEOUT);
 #else
 	uint8_t buffer[2] = {mask, tx};
 	wiringPiSPIDataRW(this->rpi_spichan, buffer, 2);
@@ -510,8 +510,8 @@ void NRF24L01::WriteRegisterMulti(const uint8_t & _reg, uint8_t *data, const uin
 
 	this->CSN_LOW();
 #ifndef RPI
-	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
-	HAL_SPI_Transmit(this->pspi, data, _count, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &mask, 1, SPI_TFER_TIMEOUT);
+	HAL_SPI_Transmit(this->pspi, data, _count, SPI_TFER_TIMEOUT);
 #else
 	uint8_t buffer[_count + 1];
 	buffer[0] = mask;
@@ -529,8 +529,8 @@ uint8_t NRF24L01::ReadRegisterTest(const uint8_t & _reg) {
 
 	this->CSN_LOW();
 #ifndef RPI
-	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
-	HAL_SPI_TransmitReceive(this->pspi, &tx, &value, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(this->pspi, &mask, 1, SPI_TFER_TIMEOUT);
+	HAL_SPI_TransmitReceive(this->pspi, &tx, &value, 1, SPI_TFER_TIMEOUT);
 #else
 	uint8_t buffer[2] = {mask, tx};
 	wiringPiSPIDataRW(this->rpi_spichan, buffer, 2);

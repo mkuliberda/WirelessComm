@@ -28,18 +28,17 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 */
 
 #include "communication_base.h"
-
 #ifndef RPI
 #include "stm32f3xx_hal.h"
 #include "gpio.h"
 #include "spi.h"
 #include "main.h"
 
+#define SPI_TFER_TIMEOUT 10
 #else
 #include "wiringPi.h"
 #include "wiringPiSPI.h"
 #endif
-
 
 
 /* NRF24L01+ registers*/

@@ -87,8 +87,8 @@ bool& NRF24L01::Config(const uint8_t & _payloadsize, const uint8_t & _channel, c
 
 
 	/* Auto retransmit delay: 1000 (4x250) us and Up to 15 retransmit trials */
-	this->WriteRegister(NRF24L01_REG_SETUP_RETR, 0x4F);
-	if (this->ReadRegister(NRF24L01_REG_SETUP_RETR) != 0x4F) {return this->valid = false;}
+	this->WriteRegister(NRF24L01_REG_SETUP_RETR, 0x00); //old: 0x4f, 0x00 - disabled
+	if (this->ReadRegister(NRF24L01_REG_SETUP_RETR) != 0x00) {return this->valid = false;}
 
 	
 	/* Dynamic length configurations: No dynamic length */

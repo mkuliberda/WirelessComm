@@ -78,8 +78,8 @@ bool& NRF24L01::Config(const uint8_t & _payloadsize, const uint8_t & _channel, c
 	this->WriteRegister(NRF24L01_REG_CONFIG, NRF24L01_CONFIG);
 	
 	/* Enable auto-acknowledgment for all pipes */
-	this->WriteRegister(NRF24L01_REG_EN_AA, 0x3F);
-	if (this->ReadRegister(NRF24L01_REG_EN_AA) != 0x3F) {return this->valid = false;}
+	this->WriteRegister(NRF24L01_REG_EN_AA, 0x00); //old:0x3f
+	if (this->ReadRegister(NRF24L01_REG_EN_AA) != 0x00) {return this->valid = false;}
 	
 	/* Enable RX addresses */
 	this->WriteRegister(NRF24L01_REG_EN_RXADDR, 0x3F);
@@ -87,8 +87,8 @@ bool& NRF24L01::Config(const uint8_t & _payloadsize, const uint8_t & _channel, c
 
 
 	/* Auto retransmit delay: 500 us and Up to 10 retransmit trials */
-	this->WriteRegister(NRF24L01_REG_SETUP_RETR, 0x1A); //old: 0x4f 15 1000us
-	if (this->ReadRegister(NRF24L01_REG_SETUP_RETR) != 0x1A) {return this->valid = false;}
+	this->WriteRegister(NRF24L01_REG_SETUP_RETR, 0x00); //old: 0x4f 15 1000us 1a
+	if (this->ReadRegister(NRF24L01_REG_SETUP_RETR) != 0x00) {return this->valid = false;}
 
 	
 	/* Dynamic length configurations: No dynamic length */
